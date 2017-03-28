@@ -6,7 +6,7 @@ use App\Models\Post;
 class PostController extends Controller
 {
     protected $model = Post::class;
-    protected $equalFields = ['id', 'user_id', 'is_show'];
+    protected $equalFields = ['id', 'is_show'];
     protected $likeFields = ['title'];
     protected $timeFields = ['created_at', 'updated_at'];
 
@@ -15,7 +15,7 @@ class PostController extends Controller
         $this->getModelQuery();
     }
 
-    public function show($id)
+    public function display($id)
     {
         $this->getModelQuery()->where('id', $id)->update(['is_show' => Post::YES]);
 

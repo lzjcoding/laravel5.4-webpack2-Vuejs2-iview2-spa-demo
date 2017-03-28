@@ -4,8 +4,8 @@ namespace App\Models;
 class Post extends Model
 {
 
-    public function user()
+    public function scopeShow($Query)
     {
-        return $this->belongsTo(User::class);
+        $Query->where('is_show', self::YES);
     }
 }

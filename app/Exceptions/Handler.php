@@ -49,7 +49,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        return parent::render($request, $e);
+//        return parent::render($request, $e);
         $msg        = $e->getMessage();
         $data       = [];
         $code       = 1;
@@ -82,7 +82,7 @@ class Handler extends ExceptionHandler
             default:
         }
 
-        $statusCode = empty($statusCode) && method_exists($e, 'getStatusCode') ? $e->getStatusCode() : $statusCode;
+        $statusCode = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : $statusCode;
         $msg        = empty($msg) ? Response::$statusTexts[$statusCode] : $msg;
 
         return response(json_encode([

@@ -10,11 +10,11 @@ class PostController extends Controller
 
     protected function beforeIndex()
     {
-        $this->getModelQuery();
+        $this->getModelQuery()->show();
     }
 
     protected function beforeShow($id)
     {
-        $this->getModelQuery();
+        $this->getModelQuery()->show();
     }
 }

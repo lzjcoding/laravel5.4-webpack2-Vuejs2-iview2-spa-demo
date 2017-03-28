@@ -22,7 +22,7 @@ Route::group(['domain' => 'blog-api.cn'], function () {
         Route::group(['middleware' => ['jwt.refresh', 'auth:admin']], function () {
             Route::get('/userInfo', 'AuthController@user');
 
-            Route::post('post/{id}/show', 'PostController@show');
+            Route::post('post/{id}/show', 'PostController@display');
             Route::post('post/{id}/hide', 'PostController@hide');
             Route::resource('post', 'PostController');
 
