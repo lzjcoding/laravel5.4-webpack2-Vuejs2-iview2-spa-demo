@@ -20,6 +20,10 @@ Route::group(['domain' => 'blog-api.cn'], function () {
         Route::post('/logout', 'AuthController@logout');
 
         Route::group(['middleware' => ['jwt.refresh', 'auth:admin']], function () {
+            Route::group(['prefix' => 'common'], function () {
+                Route::post('upload_pic', 'CommonController@uploadPic');
+            });
+
             Route::get('/userInfo', 'AuthController@user');
 
             Route::post('post/{id}/show', 'PostController@display');
