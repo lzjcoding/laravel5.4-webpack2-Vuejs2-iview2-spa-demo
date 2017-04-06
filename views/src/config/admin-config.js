@@ -15,6 +15,10 @@ let config = {
         upload_pic: '/api/admin/common/upload_pic',
         post: {
             list: '/api/admin/post',
+            create: '/api/admin/post',
+            update: function (id) {
+                return '/api/admin/post/' + id;
+            },
             show: function (id) {
                 return '/api/admin/post/' + id + '/show';
             },

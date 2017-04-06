@@ -13,6 +13,10 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, QueryTrait;
 
+    protected $rules = [];
+    protected $messages = [];
+    protected $attributes = [];
+
     public function __construct(Request $request)
     {
         $this->request = $request;
@@ -32,6 +36,26 @@ class Controller extends BaseController
         }
 
         return $this->response($Models);
+    }
+
+    public function store()
+    {
+        $this->validate($this->request, $this->rules, $this->messages, $this->attributes);
+
+        $Model = $this->getModelQuery()->getModel()->create($this->request->all());
+
+        return $this->response($Model);
+    }
+
+    public function update($id)
+    {
+        $this->validate($this->request, $this->rules, $this->messages, $this->attributes);
+
+        $Model = $this->getModelQuery()->findOrFail($id);
+        $Model->fill($this->request->all());
+        $Model->save();
+
+        return $this->response($Model);
     }
 
     public function show($id)

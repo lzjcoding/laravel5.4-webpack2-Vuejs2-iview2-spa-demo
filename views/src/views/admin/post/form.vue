@@ -36,6 +36,9 @@
         cursor: pointer;
         margin: 0 2px;
     }
+    #editor {
+        min-height: 500px;
+    }
 </style>
 <template>
     <div class="page">
@@ -47,14 +50,15 @@
             </Breadcrumb>
         </div>
         <div class="layout-content">
-            <i-form class="form" :model="formModel" :label-width="80" label-position="left">
-                <Form-item label="标题">
+            <i-form ref="form" class="form" :model="formModel" :rules="formRules" :label-width="80" label-position="left">
+                <Form-item label="标题" prop="title">
                     <i-input v-model="formModel.title" placeholder="必填"></i-input>
                 </Form-item>
                 <Form-item label="banner">
                     <div v-for="item in uploadList" class="demo-upload-list">
                         <template v-if="item.status === 'finished'">
                             <img :src="item.url">
+                            <input type="hidden" name="front_cover" :value="item.name" />
                             <div class="demo-upload-list-cover">
                                 <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
                                 <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
@@ -86,11 +90,11 @@
                         <img :src="viewUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </Form-item>
-                <Form-item label="简介">
-                    <i-input v-model="formModel.desc" type="textarea" :autosize="{minRows: 3, maxRows: 6}" placeholder="最多300字"></i-input>
+                <Form-item label="简介" prop="desc">
+                    <Input v-model="formModel.desc" type="textarea" :autosize="{minRows: 3, maxRows: 6}" placeholder="最多300字"></Input>
                 </Form-item>
-                <Form-item label="内容">
-                    <i-input v-model="formModel.content" placeholder="必填"></i-input>
+                <Form-item label="内容" prop="content">
+                    <div id="editor"></div>
                 </Form-item>
                 <Form-item label="是否显示">
                     <Radio-group v-model="formModel.is_show">
@@ -98,11 +102,19 @@
                         <Radio label="0">不显示</Radio>
                     </Radio-group>
                 </Form-item>
+                <Form-item>
+                    <Button type="primary" @click="submit">提交</Button>
+                    <router-link to="/post">
+                        <Button type="ghost" style="margin-left: 8px">取消</Button>
+                    </router-link>
+                </Form-item>
             </i-form>
         </div>
     </div>
 </template>
 <script>
+    import 'wangeditor/dist/css/wangEditor.min.css';
+    import WangEditor from 'wangeditor';
     export default {
         data () {
             return {
@@ -118,10 +130,25 @@
                 uploadList: [],
                 uploadHeaders: {
                     Authorization: config.getToken()
+                },
+                formRules: {
+                    title: [
+                        {required: true, message: '标题 必填', trigger: 'blur'}
+                    ],
+                    desc: [
+                        { type: 'string', max: 300, message: '最多300个字', trigger: 'blur' }
+                    ],
+                    content: [
+                        {required: true, message: '内容 必填', trigger: 'blur'}
+                    ]
                 }
             }
         },
         created () {
+
+        },
+        beforeDestroy () {
+            this.destroyEditor();
         },
         methods: {
             handleView (name) {
@@ -130,9 +157,7 @@
             },
             handleRemove (file) {
                 // 从 upload 实例删除数据
-                const fileList = this.$refs.upload.fileList;
-                console.log(fileList);
-                this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+                this.uploadList = [];
             },
             handleSuccess (res, file) {
                 // 因为上传过程为实例，这里模拟添加 url
@@ -142,27 +167,108 @@
                 this.uploadList.push(file);
             },
             handleFormatError (file) {
-                this.$Notice.warning({
+                this.$Notice.error({
                     title: '文件格式不正确',
                     desc: '文件 ' + file.name + ' 格式不正确，请上传 jpg 或 png 格式的图片。'
                 });
             },
             handleMaxSize (file) {
-                this.$Notice.warning({
+                this.$Notice.error({
                     title: '超出文件大小限制',
                     desc: '文件 ' + file.name + ' 太大，不能超过 2M。'
                 });
             },
             handleBeforeUpload () {
                 return this.uploadList.length < 2;
+            },
+
+            createEditor () {
+                // 创建编辑器
+                this.editor = new WangEditor('editor');
+                this.initEditorConfig();
+                this.editor.create();
+                // 初始化内容
+                this.editor.$txt.html(this.formModel.content);
+            },
+            destroyEditor () {  // 销毁编辑器，官方没有给出完美方案。此方案是作者给出的临时方案
+//                this.editor.destroy();  // 这个没有完全销毁实例，只是作了隐藏
+                // $('editor').remove();  // 不报错的话，这一步可以省略
+//                this.editor = null;
+                WangEditor.numberOfLocation--;  // 手动清除地图的重复引用，作者的临时解决方案。否则单页面来回切换时，地图报错重复引用
+            },
+            initEditorConfig () {
+                this.editor.config.fontsizes = {  // 字号配置，增加14px
+                    // 格式：'value': 'title'
+                    1: '12px',
+                    2: '13px',
+                    3: '14px',
+                    4: '16px',
+                    5: '18px',
+                    6: '24px',
+                    7: '32px',
+                    8: '48px'
+                };
+                this.editor.config.uploadImgUrl = config.getApi(config.api.upload_pic);  // 图片上传地址
+                this.editor.config.uploadImgFileName = 'file';  // 统一指定上传的文件name，需要指定。否则默认不同的上传方式是不同的name
+                this.editor.config.uploadHeaders = {
+                    'Authorization': config.getToken()
+                };
+
+                // 自定义load事件
+                var _this = this;
+                this.editor.config.uploadImgFns.onload = function (resultText, xhr) {
+                    // resultText 服务器端返回的text
+                    // xhr 是 xmlHttpRequest 对象，IE8、9中不支持
+                    var result = JSON.parse(resultText);
+                    var imgUrl = config.img_url(result.data.path);
+                    // 如果 resultText 是图片的url地址，可以这样插入图片：
+                    _this.editor.command(null, 'insertHtml', '<img src="' + imgUrl + '" style="max-width:100%;"/>');
+                    // 如果不想要 img 的 max-width 样式，也可以这样插入：
+                    // editor.command(null, 'InsertImage', resultText);
+                };
+            },
+            getEditorContent() {  // 获取编辑器 内容区内容
+                this.formModel.content = this.editor.$txt.html();  // 获取 html 格式
+            },
+
+            submit () {
+                this.getEditorContent();
+                this.$refs.form.validate((valid) => {
+                    if (valid) {
+                        this.loading = true;
+                        var method = '';
+                        var api = '';
+                        if (this.formModel.id > 0) {
+                            method = 'put';
+                            api = config.getApi(config.api.post.update(this.formModel.id));
+                        } else {
+                            method = 'post';
+                            api = config.getApi(config.api.post.create);
+                        }
+                        this.$http[method](api, this.formModel).then(response => {
+                            this.$Message.success('保存成功！');
+                            this.router.push('/post');
+                        }, response => {
+                            this.loading = false;
+                        });
+                    } else {
+                        this.$Message.error('表单验证失败！');
+                    }
+                })
             }
         },
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
+            this.createEditor();
         },
         computed: {
             viewUrl: function () {
                 return config.img_url(this.imgName);
+            }
+        },
+        watch: {
+            uploadList: function (val) {
+                this.$refs.upload.fileList = val;
             }
         }
     }
