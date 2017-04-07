@@ -61,48 +61,48 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        posts: [],
-        current: 1,
-        pageSize: 20,
-        lastPage: 1
-      }
-    },
-    created () {
-      this.getPosts();
-    },
-    methods: {
-      getPosts () {
-        this.$http.get(config.getApi(config.api.post.list) + '?page=' + this.current + '&pageSize=' + this.pageSize).then(response => {
-          var data = response.body.data;
-          this.posts = data.data;
-          this.lastPage = data.last_page;
+    export default {
+        data () {
+            return {
+                posts: [],
+                current: 1,
+                pageSize: 20,
+                lastPage: 1
+            }
+        },
+        created () {
+            this.getPosts();
+        },
+        methods: {
+            getPosts () {
+                this.$http.get(config.getApi(config.api.post.list) + '?page=' + this.current + '&pageSize=' + this.pageSize).then(response => {
+                    var data = response.body.data;
+                    this.posts = data.data;
+                    this.lastPage = data.last_page;
 
-          this.$refs.backTop.back();
-        });
-      },
-      prevPage () {
-        if (this.current <= 1) {
-          this.current = 1;
-          return;
+                    this.$refs.backTop.back();
+                });
+            },
+            prevPage () {
+                if (this.current <= 1) {
+                    this.current = 1;
+                    return;
+                }
+
+                this.current--;
+                this.getPosts();
+            },
+            nextPage () {
+                if (this.current >= this.lastPage) {
+                    this.current == this.lastPage
+                    return;
+                }
+
+                this.current++;
+                this.getPosts();
+            }
+        },
+        filters: {
         }
-
-        this.current--;
-        this.getPosts();
-      },
-      nextPage () {
-        if (this.current >= this.lastPage) {
-          this.current == this.lastPage
-          return;
-        }
-
-        this.current++;
-        this.getPosts();
-      }
-    },
-    filters: {
     }
-  }
 </script>

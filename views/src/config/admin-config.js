@@ -20,6 +20,9 @@ let config = {
                 return '/api/admin/post/' + id;
             },
             show: function (id) {
+                return '/api/admin/post/' + id;
+            },
+            display: function (id) {
                 return '/api/admin/post/' + id + '/show';
             },
             hide: function (id) {

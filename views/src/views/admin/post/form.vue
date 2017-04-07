@@ -55,7 +55,7 @@
                     <i-input v-model="formModel.title" placeholder="必填"></i-input>
                 </Form-item>
                 <Form-item label="banner">
-                    <div v-for="item in uploadList" class="demo-upload-list">
+                    <div v-if="uploadList.length > 0" v-for="item in uploadList" class="demo-upload-list">
                         <template v-if="item.status === 'finished'">
                             <img :src="item.url">
                             <input type="hidden" name="front_cover" :value="item.name" />
@@ -70,15 +70,15 @@
                     </div>
                     <Upload
                         ref="upload"
-                        :headers="uploadHeaders"
                         :show-upload-list="false"
-                        :default-file-list="defaultList"
-                        :on-success="handleSuccess"
+                        :headers="uploadHeaders"
                         :format="['jpg','jpeg','png']"
                         :max-size="2048"
                         :on-format-error="handleFormatError"
                         :on-exceeded-size="handleMaxSize"
                         :before-upload="handleBeforeUpload"
+                        :on-progress="handleProgress"
+                        :on-success="handleSuccess"
                         type="drag"
                         :action="uploadUrl"
                         style="display: inline-block;width:58px;">
@@ -91,10 +91,10 @@
                     </Modal>
                 </Form-item>
                 <Form-item label="简介" prop="desc">
-                    <Input v-model="formModel.desc" type="textarea" :autosize="{minRows: 3, maxRows: 6}" placeholder="最多300字"></Input>
+                    <Input v-model="formModel.desc" type="textarea" placeholder="最多300字"></Input>
                 </Form-item>
                 <Form-item label="内容" prop="content">
-                    <div id="editor"></div>
+                    <div id="editor" v-html="formModel.content"></div>
                 </Form-item>
                 <Form-item label="是否显示">
                     <Radio-group v-model="formModel.is_show">
@@ -123,11 +123,9 @@
                 formModel: {
                     is_show: 1
                 },
-                defaultList: [
-                ],
+                uploadList: [],
                 imgName: '',
                 visible: false,
-                uploadList: [],
                 uploadHeaders: {
                     Authorization: config.getToken()
                 },
@@ -151,20 +149,28 @@
             this.destroyEditor();
         },
         methods: {
+            getData (id) {
+                this.$http.get(config.getApi(config.api.post.show(id))).then(response => {
+                    this.formModel = response.body.data;
+                    const frontCover = this.formModel.front_cover;
+                    if (frontCover) {
+                        this.initFile({name: frontCover, url: config.img_url(frontCover), status: 'finished'});
+                    }
+                }, response => {
+                    this.loading = false;
+                });
+            },
+
             handleView (name) {
                 this.imgName = name;
                 this.visible = true;
             },
             handleRemove (file) {
-                // 从 upload 实例删除数据
-                this.uploadList = [];
+                this.clearFiles();
             },
-            handleSuccess (res, file) {
-                // 因为上传过程为实例，这里模拟添加 url
-                file.url = config.img_url(res.data.path);
-                file.name = res.data.path;
-                this.uploadList = [];
-                this.uploadList.push(file);
+            handleBeforeUpload (file)
+            {
+                this.clearFiles();
             },
             handleFormatError (file) {
                 this.$Notice.error({
@@ -178,8 +184,25 @@
                     desc: '文件 ' + file.name + ' 太大，不能超过 2M。'
                 });
             },
-            handleBeforeUpload () {
-                return this.uploadList.length < 2;
+            handleProgress (event, file, fileList) {
+                this.initFile(file);
+            },
+            handleSuccess (res, file, fileList) {
+                file.name = res.data.path;
+                file.url = config.img_url(file.name);
+
+                this.initFile(file);
+                this.formModel.front_cover = file.name;
+            },
+            initFile (file) {
+                this.uploadList = [];
+                this.uploadList.push(file);
+                this.formModel.front_cover = file.name;
+            },
+            clearFiles () {
+                this.$refs.upload.clearFiles();
+                this.uploadList = [];
+                this.formModel.front_cover = '';
             },
 
             createEditor () {
@@ -197,17 +220,6 @@
                 WangEditor.numberOfLocation--;  // 手动清除地图的重复引用，作者的临时解决方案。否则单页面来回切换时，地图报错重复引用
             },
             initEditorConfig () {
-                this.editor.config.fontsizes = {  // 字号配置，增加14px
-                    // 格式：'value': 'title'
-                    1: '12px',
-                    2: '13px',
-                    3: '14px',
-                    4: '16px',
-                    5: '18px',
-                    6: '24px',
-                    7: '32px',
-                    8: '48px'
-                };
                 this.editor.config.uploadImgUrl = config.getApi(config.api.upload_pic);  // 图片上传地址
                 this.editor.config.uploadImgFileName = 'file';  // 统一指定上传的文件name，需要指定。否则默认不同的上传方式是不同的name
                 this.editor.config.uploadHeaders = {
@@ -227,12 +239,9 @@
                     // editor.command(null, 'InsertImage', resultText);
                 };
             },
-            getEditorContent() {  // 获取编辑器 内容区内容
-                this.formModel.content = this.editor.$txt.html();  // 获取 html 格式
-            },
 
             submit () {
-                this.getEditorContent();
+                this.formModel.content = this.editor.$txt.html();
                 this.$refs.form.validate((valid) => {
                     if (valid) {
                         this.loading = true;
@@ -247,7 +256,7 @@
                         }
                         this.$http[method](api, this.formModel).then(response => {
                             this.$Message.success('保存成功！');
-                            this.router.push('/post');
+                            this.$router.push('/post');
                         }, response => {
                             this.loading = false;
                         });
@@ -258,17 +267,14 @@
             }
         },
         mounted () {
-            this.uploadList = this.$refs.upload.fileList;
+            if (this.$route.params.id > 0) {
+                this.getData(this.$route.params.id);
+            }
             this.createEditor();
         },
         computed: {
             viewUrl: function () {
                 return config.img_url(this.imgName);
-            }
-        },
-        watch: {
-            uploadList: function (val) {
-                this.$refs.upload.fileList = val;
             }
         }
     }

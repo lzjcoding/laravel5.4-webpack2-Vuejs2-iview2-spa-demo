@@ -155,43 +155,43 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        isHideText: false,
-        activeKey: this.$route.name,
-        authUser: {
-          name: ''
-        }
-      }
-    },
-    computed: {
-      iconSize () {
-        return this.isHideText ? 24 : 14;
-      },
-    },
-    created () {
-      if (window.innerWidth <= 768) {
-        this.isHideText = true;
-      }
+    export default {
+        data () {
+            return {
+                isHideText: false,
+                activeKey: this.$route.name,
+                authUser: {
+                    name: ''
+                }
+            }
+        },
+        computed: {
+            iconSize () {
+                return this.isHideText ? 24 : 14;
+            },
+        },
+        created () {
+            if (window.innerWidth <= 768) {
+                this.isHideText = true;
+            }
 
-      this.fetchUserData();
-    },
-    methods: {
-      toggleClick () {
-        this.isHideText = ! this.isHideText;
-      },
-      fetchUserData () {
-        this.$http.get(config.getApi(config.api.user_info)).then(response => {
-          this.authUser.name = response.body.data.name;
-        });
-      },
-      logout () {
-        this.$http.post(config.getApi(config.api.logout)).then(response => {
-          config.delToken();
-          window.location.href = config.login_url;
-        });
-      }
+            this.fetchUserData();
+        },
+        methods: {
+            toggleClick () {
+                this.isHideText = ! this.isHideText;
+            },
+            fetchUserData () {
+                this.$http.get(config.getApi(config.api.user_info)).then(response => {
+                    this.authUser.name = response.body.data.name;
+                });
+            },
+            logout () {
+                this.$http.post(config.getApi(config.api.logout)).then(response => {
+                    config.delToken();
+                    window.location.href = config.login_url;
+                });
+            }
+        }
     }
-  }
 </script>

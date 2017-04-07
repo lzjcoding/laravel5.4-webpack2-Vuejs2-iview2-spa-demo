@@ -62,7 +62,7 @@
                     {title: "分享数", key: "share_num", width: 120, sortable: true},
                     {title: "创建时间", key: "created_at", width: 150, sortable: true},
                     {title: "最近更新时间", key: "updated_at", width: 150, sortable: true},
-                    {title: "是否显示", key: "is_show", width: 120, sortable: true, fixed: "right",
+                    {title: "是否显示", key: "is_show", width: 100, sortable: true, fixed: "right",
                         render (row, column, index) {
                             if (row.is_show == 1) {
                                 return '显示';
@@ -70,11 +70,12 @@
                                 return '隐藏';
                             }
                         }},
-                    {title: "操作", key: "operations", width: 120, fixed: "right",
+                    {title: "操作", key: "operations", width: 170, fixed: "right",
                         render (row, column, index) {
                             var btns = '';
+                            btns += '<i-button type="success" size="small" @click="btnClick(\'goEdit\', '+ row.id +')"> 编辑 </i-button>';
                             if (row.is_show == 1) {
-                                btns += '<i-button type="warning" size="small" @click="btnClick(\'hideItem\', '+ row.id +')">' +
+                                btns += ' <i-button type="warning" size="small" @click="btnClick(\'hideItem\', '+ row.id +')">' +
                                             '<span v-if="!loading">隐藏</span><span v-else></span>' +
                                         '</i-button>';
                             } else {
@@ -116,7 +117,7 @@
                     content: '你确认要显示这条记录？',
                     onOk: () => {
                         this.loading = true;
-                        this.$http.post(config.getApi(config.api.post.show(id))).then(response => {
+                        this.$http.post(config.getApi(config.api.post.display(id))).then(response => {
                             this.$Message.success('操作成功');
                             this.refreshData();
                             this.loading = false;
@@ -158,6 +159,9 @@
                         });
                     }
                 });
+            },
+            goEdit (id) {
+                this.$router.push({name: 'post-edit', params: {id: id}});
             }
         }
     }
