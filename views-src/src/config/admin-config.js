@@ -3,12 +3,10 @@ import baseConfig from './config';
 let config = {
     token_name: 'admin_jwt_token_name',
     login_url: '/login.html',
-    cdn: '//blog-api.cn/',
     img_url: function (path) {
         return this.cdn + path;
     },
     api: {
-        domain: 'http://blog-api.cn',
         user_info: '/api/admin/userInfo',
         login: '/api/admin/login',
         logout: '/api/admin/logout',
@@ -34,7 +32,7 @@ let config = {
         }
     },
     getApi (apiUri) {
-        return this.api.domain + apiUri;
+        return baseConfig.api_domain + apiUri;
     },
     setToken (token) {
         window.localStorage.setItem(this.token_name, token);

@@ -2,7 +2,6 @@ import baseConfig from './config';
 
 let config = {
   api: {
-    domain: 'http://blog-api.cn',
     post: {
       list: '/api/blog/post',
       show: function (id) {
@@ -11,7 +10,7 @@ let config = {
     }
   },
   getApi (apiUri) {
-    return this.api.domain + apiUri;
+      return baseConfig.api_domain + apiUri;
   }
 };
 

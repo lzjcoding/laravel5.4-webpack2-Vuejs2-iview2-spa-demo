@@ -51,7 +51,7 @@ var webpackConfig = merge(baseWebpackConfig, {
         // you can customize output by editing /index.html
         // see https://github.com/ampedandwired/html-webpack-plugin
         new HtmlWebpackPlugin({
-            title: 'blog',
+            title: 'spa-blog',
             filename: 'index.html',
             template: './src/templates/front.ejs',
             inject: true,

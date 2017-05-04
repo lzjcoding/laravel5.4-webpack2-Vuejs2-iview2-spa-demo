@@ -26,7 +26,7 @@ module.exports = merge(baseWebpackConfig, {
         new webpack.NoEmitOnErrorsPlugin(),
         // https://github.com/ampedandwired/html-webpack-plugin
         new HtmlWebpackPlugin({
-            title: 'lzj~blog',
+            title: 'spa-blog',
             filename: 'index.html',
             template: './src/templates/front.ejs',
             inject: true,

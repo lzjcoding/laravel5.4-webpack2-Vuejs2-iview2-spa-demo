@@ -22,7 +22,7 @@
         <div class="page-content">
           <p class="title">{{ post.title }}</p>
           <p class="small-title">{{ post.created_at }}</p>
-          <p class="content">{{ post.content }}</p>
+          <p class="content" v-html="post.content"></p>
         </div>
       </iCol>
       <iCol :xs="1" :sm="4" :md="5" :lg="6">&nbsp;</iCol>

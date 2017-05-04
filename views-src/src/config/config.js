@@ -2,7 +2,8 @@ let config = {
     productionTip: false,
     debug: true,
     avatar_404: '/images/avatar_404.png',
-    cdn: '//localhost:8080/',
+    cdn: '/',
+    api_domain: 'http://blog-api.cn',
     img_url: function (path) {
         return this.cdn + path;
     }

@@ -30,7 +30,7 @@
 </style>
 <template>
   <div class="page">
-    <h1 class="page-title">Lzj ~ Blog</h1>
+    <h1 class="page-title">Spa-Blog</h1>
     <Row>
       <iCol :xs="1" :sm="4" :md="5" :lg="6">&nbsp;</iCol>
       <iCol :xs="22" :sm="16" :md="14" :lg="12">
