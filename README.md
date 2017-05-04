@@ -1,6 +1,7 @@
 # spa demo
+_一个简单的前后端分离单页blog应用，后端接口使用laravel5.4开发接口，前端使用webpack vuejs实现单页应用，后台使用iview2UI组件库_
 
-> laravel5.4 webpack2 Vuejs2 iview2 spa demo
+> 技术栈 laravel5.4 + webpack2 + Vuejs2 + vue-router + vue-resource + iview2
 
 ## 安装composer包
 ``` bash
@@ -12,7 +13,7 @@ composer install
     php artisan migrate
 ```
 
-## 如果需要测试数据可以运行seeder，会生成后台账号[admin admin]和测试数据
+## 如果需要测试数据可以运行seeder文件，会生成后台账号[admin admin]和测试数据
 ```bash
     php artisan db:seed
 ```
