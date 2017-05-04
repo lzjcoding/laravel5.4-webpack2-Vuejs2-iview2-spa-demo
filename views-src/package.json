@@ -1,7 +1,7 @@
 {
-  "name": "blog.cn",
+  "name": "spa demo",
   "version": "1.0.0",
-  "description": "Vuejs2 webpack2 iview2 vue-material blog",
+  "description": "laravel5.4 webpack2 Vuejs2 iview2 spa demo",
   "author": "lzj <954121868@qq.com>",
   "private": true,
   "scripts": {
