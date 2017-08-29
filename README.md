@@ -15,7 +15,7 @@ composer install
 
 ## 如果需要测试数据可以运行seeder文件，会生成后台账号[admin admin]和测试数据
 ```bash
-    php artisan db:seed
+    php artisan db:seed --class=AdminsSeeder
 ```
 
 ## 进入views-src目录安装前端资源
