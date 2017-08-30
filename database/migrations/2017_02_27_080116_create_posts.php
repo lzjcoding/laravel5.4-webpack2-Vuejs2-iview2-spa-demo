@@ -21,10 +21,6 @@ class CreatePosts extends Migration
             $table->text('content');
             $table->unsignedTinyInteger('is_show')->comment('是否显示，1=是 0=否');
             $table->unsignedInteger('click_num')->comment('点击数')->default(0);
-            $table->unsignedInteger('like_num')->comment('点赞数')->default(0);
-            $table->unsignedInteger('comment_num')->comment('评论数')->default(0);
-            $table->unsignedInteger('collect_num')->comment('收藏数')->default(0);
-            $table->unsignedInteger('share_num')->comment('分享数')->default(0);
 
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

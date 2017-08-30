@@ -4,6 +4,7 @@ namespace App;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JwtGuard implements Guard
@@ -33,7 +34,11 @@ class JwtGuard implements Guard
 
     public function check()
     {
-        if (! $User = JWTAuth::parseToken()->authenticate()) {
+        try {
+            if (! $User = JWTAuth::parseToken()->authenticate()) {
+                return false;
+            }
+        } catch (JWTException $e) {
             return false;
         }
 
