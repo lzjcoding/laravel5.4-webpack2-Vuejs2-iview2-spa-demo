@@ -1,6 +1,0 @@
-*.less
-*.sass
-*.pcss
-*.css
-*.html
-src/polyfill-ie.js
