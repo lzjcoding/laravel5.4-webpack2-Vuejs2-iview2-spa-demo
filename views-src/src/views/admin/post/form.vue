@@ -126,9 +126,6 @@
                 uploadList: [],
                 imgName: '',
                 visible: false,
-                uploadHeaders: {
-                    Authorization: config.getToken()
-                },
                 formRules: {
                     title: [
                         {required: true, message: '标题 必填', trigger: 'blur'}
@@ -222,9 +219,6 @@
             initEditorConfig () {
                 this.editor.config.uploadImgUrl = config.getApi(config.api.upload_pic);  // 图片上传地址
                 this.editor.config.uploadImgFileName = 'file';  // 统一指定上传的文件name，需要指定。否则默认不同的上传方式是不同的name
-                this.editor.config.uploadHeaders = {
-                    'Authorization': config.getToken()
-                };
 
                 // 自定义load事件
                 var _this = this;

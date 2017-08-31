@@ -1,7 +1,6 @@
 import baseConfig from './config';
 
 let config = {
-    token_name: 'admin_jwt_token_name',
     login_url: '/login.html',
     img_url: function (path) {
         return this.cdn + path;
@@ -33,15 +32,6 @@ let config = {
     },
     getApi (apiUri) {
         return baseConfig.api_domain + apiUri;
-    },
-    setToken (token) {
-        window.localStorage.setItem(this.token_name, token);
-    },
-    getToken () {
-        return window.localStorage.getItem(this.token_name)
-    },
-    delToken () {
-        window.localStorage.removeItem(this.token_name);
     }
 };
 

@@ -16,53 +16,54 @@ Vue.config.productionTip = config.productionTip;
 Vue.config.debug = config.debug;
 
 Vue.http.interceptors.push(function (request, next) {
-  this.$Loading.start();
+    // 跨域提交cookie
+    request.withCredentials = true;
 
-  request.headers.set('Authorization', config.getToken());
+    this.$Loading.start();
 
-  next(function (response) {
-
-    if (response.headers.map.authorization !== undefined) {
-      config.setToken(response.headers.map.authorization[0]);
-    }
-
-    // 全局错误处理
-    if (response.status === 401 && response.body.code !== 4010) {
-      window.location.href = config.login_url;
-    } else if (response.status === 422) {
-      this.$Loading.error();
-      var errorObj = response.body.data;
-      for (var field in errorObj) {
-        for (var key in errorObj[field]) {
-          this.$Notice.error({title: errorObj[field][key]})
+    next(function (response) {
+        // 全局错误处理
+        if (response.status === 200) {
+            if (response.body.status_code === 401 && response.body.code !== 4010) {
+                window.location.href = config.login_url;
+            } else if (response.body.status_code === 422) {
+                this.$Loading.error();
+                var errorObj = response.body.data;
+                for (var field in errorObj) {
+                    for (var key in errorObj[field]) {
+                        this.$Notice.error({title: errorObj[field][key]})
+                    }
+                }
+            } else if (response.body.status_code !== 200) {
+                this.$Loading.error();
+                this.$Message.error(response.data.msg);
+            } else {
+                this.$Loading.finish();
+            }
+        } else {
+            this.$Loading.error();
+            this.$Message.error("发生了未知错误")
         }
-      }
-    } else if (response.status !== 200) {
-      this.$Loading.error();
-      this.$Message.error(response.data.msg);
-    } else {
-      this.$Loading.finish();
-    }
-  });
+    });
 });
 
 // 路由配置
 let router = new VueRouter({
-  routes: routes,
-  scrollBehavior (to, from, savedPosition) {
-    return {"x": 0, "y": 0};
-  }
+    routes: routes,
+    scrollBehavior (to, from, savedPosition) {
+        return {"x": 0, "y": 0};
+    }
 });
 router.beforeEach((to, from, next) => {
-  iview.LoadingBar.start();
-  next();
+    iview.LoadingBar.start();
+    next();
 });
 router.afterEach((to, from, next) => {
-  iview.LoadingBar.finish();
+    iview.LoadingBar.finish();
 });
 
 new Vue({
-  el: '#app',  //vue实例的根元素
-  router,    //在vue实例中,引入定义的路由
-  render: h => h(App)    //渲染App组件
+    el: '#app',  //vue实例的根元素
+    router,    //在vue实例中,引入定义的路由
+    render: h => h(App)    //渲染App组件
 });

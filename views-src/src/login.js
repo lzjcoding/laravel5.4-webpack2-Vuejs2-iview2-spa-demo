@@ -12,6 +12,12 @@ Vue.config.productionTip = config.productionTip;
 // 开启debug模式
 Vue.config.debug = config.debug;
 
+Vue.http.interceptors.push((request, next) => {
+	// 跨域提交cookie
+	request.withCredentials = true;
+	next();
+});
+
 window.onload = function () {
 	new Vue({
 		el: '#app',

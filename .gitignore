@@ -2,6 +2,7 @@
 /public/hot
 /storage/*.key
 /storage/framework/cache
+/storage/framework/sessions
 /vendor
 /.idea
 Homestead.json

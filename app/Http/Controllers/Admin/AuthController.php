@@ -10,16 +10,13 @@ class AuthController extends Controller
 {
     use AuthenticatesUsers;
 
-    protected function attemptLogin(Request $request)
-    {
-        return $this->guard()->attempt($this->credentials($request), ['guard' => 'admin']);
-    }
-
     protected function sendLoginResponse(Request $request)
     {
+        $request->session()->regenerate();
+
         $this->clearLoginAttempts($request);
 
-        return $this->response()->header('Authorization', 'Bearer ' . $this->guard()->getToken());
+        return $this->response();
     }
 
     protected function sendFailedLoginResponse(Request $request)
@@ -37,9 +34,13 @@ class AuthController extends Controller
         return $this->response($this->guard()->user());
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         $this->guard()->logout();
+
+        $request->session()->flush();
+
+        $request->session()->regenerate();
 
         return $this->response();
     }

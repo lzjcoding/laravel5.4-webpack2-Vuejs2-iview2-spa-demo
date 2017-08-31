@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
@@ -90,20 +91,19 @@ class Handler extends ExceptionHandler
             'msg'         => $msg,
             'data'        => $data,
             'status_code' => $statusCode,
-        ], JSON_UNESCAPED_UNICODE), $statusCode)->header('Content-Type', 'application/json');
+        ], JSON_UNESCAPED_UNICODE))->header('Content-Type', 'application/json');
     }
 
     /**
-     * Convert an authentication exception into an unauthenticated response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
-     * @return \Illuminate\Http\Response
+     * @param $request
+     * @param AuthenticationException $exception
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws AuthenticationException
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            throw  $exception;
         }
 
         return redirect()->guest('login');
