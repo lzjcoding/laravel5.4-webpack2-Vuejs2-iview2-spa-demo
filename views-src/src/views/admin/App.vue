@@ -188,7 +188,6 @@
             },
             logout () {
                 this.$http.post(config.getApi(config.api.logout)).then(response => {
-                    config.delToken();
                     window.location.href = config.login_url;
                 });
             }
