@@ -87,10 +87,9 @@
                     if (valid) {
                         this.loading = true;
                         this.$http.post(config.getApi(config.api.login), this.formModel).then(response => {
-                            if (response.headers.map.Authorization !== undefined) {
-                              config.setToken(response.headers.map.Authorization[0]);
+                            if (response.headers.map.authorization !== undefined) {
+                              config.setToken(response.headers.map.authorization[0]);
                             }
-
                             this.$Message.success('登录成功！');
                             setTimeout(() => {
                                 window.location.href = '/admin.html';

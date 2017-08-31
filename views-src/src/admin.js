@@ -22,8 +22,8 @@ Vue.http.interceptors.push(function (request, next) {
 
   next(function (response) {
 
-    if (response.headers.map.Authorization !== undefined) {
-      config.setToken(response.headers.map.Authorization[0]);
+    if (response.headers.map.authorization !== undefined) {
+      config.setToken(response.headers.map.authorization[0]);
     }
 
     // 全局错误处理
