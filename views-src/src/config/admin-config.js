@@ -2,9 +2,6 @@ import baseConfig from './config';
 
 let config = {
     login_url: '/login.html',
-    img_url: function (path) {
-        return this.cdn + path;
-    },
     api: {
         user_info: '/api/admin/userInfo',
         login: '/api/admin/login',
@@ -35,6 +32,6 @@ let config = {
     }
 };
 
-Object.assign(baseConfig, config);
+config = Object.assign(baseConfig, config);
 
 export default config;

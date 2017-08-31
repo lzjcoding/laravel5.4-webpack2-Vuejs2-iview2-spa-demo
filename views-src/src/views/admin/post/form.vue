@@ -70,8 +70,8 @@
                     </div>
                     <Upload
                         ref="upload"
+                        :with-credentials="true"
                         :show-upload-list="false"
-                        :headers="uploadHeaders"
                         :format="['jpg','jpeg','png']"
                         :max-size="2048"
                         :on-format-error="handleFormatError"

@@ -11,3 +11,4 @@ Homestead.yaml
 /views-src/node_modules
 /public/*.html
 /public/static
+/public/pics/*
